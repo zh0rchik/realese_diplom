@@ -126,7 +126,6 @@ class KlystronAnalyzer:
 
         # Меню анализа
         analysis_menu = tk.Menu(menubar, tearoff=0)
-        analysis_menu.add_command(label="Обучить все модели", command=self.train_all_models)
         analysis_menu.add_separator()
         analysis_menu.add_command(label="Вывести метрики", command=self.show_metrics)
         menubar.add_cascade(label="Анализ", menu=analysis_menu)
@@ -395,20 +394,6 @@ class KlystronAnalyzer:
                 messagebox.showinfo("Успешно", "Данные для классификации успешно загружены")
             except Exception as e:
                 messagebox.showerror("Ошибка", f"Ошибка при загрузке данных: {str(e)}")
-
-    def train_all_models(self):
-        """Обучение всех моделей последовательно"""
-        if self.reg_data is None or self.class_data is None:
-            messagebox.showwarning("Предупреждение", "Сначала загрузите данные для регрессии и классификации")
-            return
-
-        # Показываем экран загрузки
-        self.notebook.pack_forget()
-        self.loading_frame.pack(fill='both', expand=True)
-        self.progress.start()
-
-        # Запускаем обучение в отдельном потоке
-        threading.Thread(target=self._train_all_models_thread).start()
 
     def _train_all_models_thread(self):
         """Поток для обучения всех моделей"""
