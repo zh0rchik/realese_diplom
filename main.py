@@ -150,22 +150,12 @@ class KlystronAnalyzer:
         self.reg_data_info = tk.Text(reg_frame, height=10, width=80)
         self.reg_data_info.pack(padx=10, pady=10, fill='both', expand=True)
 
-        # Добавляем скроллбар для текстового поля
-        reg_scrollbar = ttk.Scrollbar(reg_frame, command=self.reg_data_info.yview)
-        reg_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.reg_data_info.config(yscrollcommand=reg_scrollbar.set)
-
         # Фрейм для информации о классификационных данных
         class_frame = ttk.LabelFrame(data_frame, text="Данные для классификации")
         class_frame.pack(padx=10, pady=5, fill='both', expand=True)
 
         self.class_data_info = tk.Text(class_frame, height=10, width=80)
         self.class_data_info.pack(padx=10, pady=10, fill='both', expand=True)
-
-        # Добавляем скроллбар для текстового поля
-        class_scrollbar = ttk.Scrollbar(class_frame, command=self.class_data_info.yview)
-        class_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.class_data_info.config(yscrollcommand=class_scrollbar.set)
 
         # Кнопки загрузки данных
         btn_frame = ttk.Frame(data_frame)
@@ -311,11 +301,6 @@ class KlystronAnalyzer:
         # Текстовое поле для вывода результатов
         self.results_text = tk.Text(results_frame, height=12, width=80)
         self.results_text.pack(padx=10, pady=10, fill='both', expand=True)
-
-        # Добавляем скроллбар для текстового поля результатов
-        results_scrollbar = ttk.Scrollbar(results_frame, command=self.results_text.yview)
-        results_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.results_text.config(yscrollcommand=results_scrollbar.set)
 
     def load_regression_data(self):
         """Загрузка данных для регрессии"""
