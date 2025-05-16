@@ -90,13 +90,13 @@ class KlystronAnalyzer:
             # Проверка наличия всех необходимых параметров
             required_models = ['yn', 'yc', 'yv', 'zn', 'zc', 'zv']
 
-            # Проверяем регрессионные модели
+            # Проверка регрессионных моделей
             reg_models = ['yn', 'yc', 'yv']
             for model in reg_models:
                 if model not in self.regression_params:
                     raise ValueError(f"Не найдены параметры для модели регрессии {model}")
 
-            # Проверяем классификационные модели
+            # Проверка классификационных моделей
             class_models = ['zn', 'zc', 'zv']
             for model in class_models:
                 if model not in self.classification_params:
@@ -176,7 +176,7 @@ class KlystronAnalyzer:
 
         ttk.Label(top_frame, text="Оценка выходной мощности блока:", font=("Arial", 12)).pack(side='left', padx=10)
 
-        # Создаем фреймы для каждой модели (yn, yc, yв)
+        # фреймы для каждой модели (yn, yc, yв)
         models_frame = ttk.Frame(regression_frame)
         models_frame.pack(padx=10, pady=10, fill='both', expand=True)
 
@@ -219,8 +219,7 @@ class KlystronAnalyzer:
 
         ttk.Label(top_frame, text="Оценка состояния блока усилителя мощности:", font=("Arial", 12)).pack(side='left',
                                                                                                          padx=10)
-
-        # Создаем фреймы для каждой модели (zn, zc, zв)
+        # Создание для каждой модели (zn, zc, zв)
         models_frame = ttk.Frame(classification_frame)
         models_frame.pack(padx=10, pady=10, fill='both', expand=True)
 
@@ -262,11 +261,11 @@ class KlystronAnalyzer:
         input_frame = ttk.LabelFrame(prediction_frame, text="Ввод параметров нового клистрона")
         input_frame.pack(padx=10, pady=10, fill='x')
 
-        # Создаем фрейм с сеткой для x1-x10
+        # Создание фрейма с сеткой для x1-x10
         x_frame = ttk.Frame(input_frame)
         x_frame.pack(padx=10, pady=10, fill='x')
 
-        # Создаем поля ввода для x1-x10
+        # Создание поля ввода для x1-x10
         self.x_entries = {}
         for i in range(10):
             row, col = divmod(i, 5)
@@ -308,13 +307,13 @@ class KlystronAnalyzer:
                                                filetypes=[("Excel files", "*.xlsx;*.xls"), ("CSV files", "*.csv")])
         if file_path:
             try:
-                # Определяем тип файла по расширению
+                # Определение типа файла по расширению
                 if file_path.endswith('.csv'):
                     self.reg_data = pd.read_csv(file_path, encoding='utf-8')
                 else:
                     self.reg_data = pd.read_excel(file_path)
 
-                # Проверяем наличие необходимых столбцов
+                # Проверка наличие необходимых столбцов
                 required_columns_reg = ['х1', 'х2', 'х3', 'х4', 'х5', 'х6', 'х7', 'х8', 'х9', 'х10', 'Yн', 'Yс', 'Yв']
                 missing_columns = [col for col in required_columns_reg if col not in self.reg_data.columns]
 
@@ -322,12 +321,12 @@ class KlystronAnalyzer:
                     messagebox.showwarning("Предупреждение",
                                            f"В файле отсутствуют следующие столбцы: {', '.join(missing_columns)}")
 
-                # Обновляем информацию на вкладке данных
+                # Обновление инфы на вкладке данных
                 info_text = f"Загружен файл: {file_path}\n"
                 info_text += f"Количество строк: {len(self.reg_data)}\n"
                 info_text += f"Колонки: {', '.join(self.reg_data.columns.tolist())}\n\n"
 
-                # Показываем описательную статистику
+                # описательная статистика
                 info_text += "Описательная статистика:\n"
                 info_text += str(self.reg_data.describe())
 
@@ -344,13 +343,13 @@ class KlystronAnalyzer:
                                                filetypes=[("Excel files", "*.xlsx;*.xls"), ("CSV files", "*.csv")])
         if file_path:
             try:
-                # Определяем тип файла по расширению
+                # Определение типа файла по расширению
                 if file_path.endswith('.csv'):
                     self.class_data = pd.read_csv(file_path, encoding='utf-8')
                 else:
                     self.class_data = pd.read_excel(file_path)
 
-                # Проверяем наличие необходимых столбцов
+                # Проверка наличие необходимых столбцов
                 required_columns_class = ['Yн', 'Yс', 'Yв', 'U', 'Т', 'Zн', 'Zс', 'Zв']
                 missing_columns = [col for col in required_columns_class if col not in self.class_data.columns]
 
@@ -358,16 +357,16 @@ class KlystronAnalyzer:
                     messagebox.showwarning("Предупреждение",
                                            f"В файле отсутствуют следующие столбцы: {', '.join(missing_columns)}")
 
-                # Обновляем информацию на вкладке данных
+                # Обновление инфы на вкладке данных
                 info_text = f"Загружен файл: {file_path}\n"
                 info_text += f"Количество строк: {len(self.class_data)}\n"
                 info_text += f"Колонки: {', '.join(self.class_data.columns.tolist())}\n\n"
 
-                # Показываем описательную статистику
+                # описательную статистику
                 info_text += "Описательная статистика:\n"
                 info_text += str(self.class_data.describe())
 
-                # Добавим распределение классов
+                # распределение классов
                 info_text += "\n\nРаспределение классов:\n"
                 for col in ['Zн', 'Zс', 'Zв']:
                     if col in self.class_data.columns:
@@ -405,23 +404,23 @@ class KlystronAnalyzer:
             messagebox.showwarning("Предупреждение", "Сначала загрузите данные для регрессии")
             return
 
-        # Показываем экран загрузки
+        # отображение экрана загрузки
         self.notebook.pack_forget()
         self.loading_frame.pack(fill='both', expand=True)
         self.progress.start()
 
-        # Запускаем обучение в отдельном потоке
+        # Запуск обучения в отдельном потоке
         threading.Thread(target=self._train_regression_thread, args=(model_type,)).start()
 
     def _train_regression_thread(self, model_type):
         """Поток для обучения модели регрессии"""
         try:
-            # Получаем параметры из загруженного JSON
+            # Получить параметры из загруженного JSON
             params = self.regression_params.get(model_type)
             if not params:
                 raise ValueError(f"Не найдены параметры для модели {model_type}")
 
-            # Определяем входные и выходную переменную
+            # Определить входные и выходную переменную
             X = self.reg_data[['х1', 'х2', 'х3', 'х4', 'х5', 'х6', 'х7', 'х8', 'х9', 'х10']]
             target_column = params['target_column']
 
@@ -455,7 +454,7 @@ class KlystronAnalyzer:
                 random_state=params.get('random_state_cv', 42)
             )
 
-            # Создаем модель с уменьшенным поиском параметров для ускорения
+            # сетка гиперпараметров, которая содержит в себе гиперпараметры из JSON
             simplified_param_grid = {}
 
             for key in params['param_grid']:
@@ -536,7 +535,7 @@ class KlystronAnalyzer:
         self.loading_frame.pack(fill='both', expand=True)
         self.progress.start()
 
-        # Запускаем обучение в отдельном потоке
+        # Запуск обучения в отдельном потоке
         threading.Thread(target=self._train_classification_thread, args=(model_type,)).start()
 
     @staticmethod
@@ -614,7 +613,7 @@ class KlystronAnalyzer:
                 random_state=params.get('random_state_cv', 42)
             )
 
-            # Формируем simplified_param_grid
+            # формирование simplified_param_grid
             simplified_param_grid = {}
             for key in params['param_grid']:
                 if key == 'hidden_layer_sizes':
@@ -625,7 +624,6 @@ class KlystronAnalyzer:
                 else:
                     simplified_param_grid[key] = params['param_grid'][key]
 
-            # Создаем и обучаем модель (без class_weight)
             grid_search = GridSearchCV(
                 estimator=MLPClassifier(
                     random_state=params.get('random_state_mlp', 42)
@@ -706,12 +704,12 @@ class KlystronAnalyzer:
             messagebox.showwarning("Предупреждение", "Сначала обучите модели")
             return
 
-        # Создаем новое окно
+        # новое окно
         metrics_window = tk.Toplevel(self.root)
         metrics_window.title("Метрики всех моделей")
         metrics_window.geometry("800x600")
 
-        # Создаем текстовое поле с прокруткой
+        # текстовое поле
         text_frame = ttk.Frame(metrics_window)
         text_frame.pack(padx=10, pady=10, fill='both', expand=True)
 
@@ -722,7 +720,7 @@ class KlystronAnalyzer:
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         text_area.config(yscrollcommand=scrollbar.set)
 
-        # Добавляем метрики регрессии
+        # метрики регрессии
         if self.regression_metrics:
             text_area.insert(tk.END, "=== МЕТРИКИ РЕГРЕССИИ ===\n\n")
             for model_type, metrics in self.regression_metrics.items():
@@ -734,7 +732,7 @@ class KlystronAnalyzer:
                     text_area.insert(tk.END, f"  {param}: {value}\n")
                 text_area.insert(tk.END, "\n")
 
-        # Добавляем метрики классификации
+        # метрики классификации
         if self.classification_metrics:
             text_area.insert(tk.END, "\n=== МЕТРИКИ КЛАССИФИКАЦИИ ===\n\n")
             for model_type, metrics in self.classification_metrics.items():
@@ -768,7 +766,7 @@ class KlystronAnalyzer:
     def make_prediction(self):
         """Выполнение прогнозирования на основе введенных данных"""
         try:
-            # Проверяем, что все модели обучены
+            # Проверка, что все модели обучены
             if None in self.regression_models.values() or None in self.classification_models.values():
                 messagebox.showwarning("Предупреждение", "Сначала обучите все модели")
                 return
@@ -786,7 +784,7 @@ class KlystronAnalyzer:
                     messagebox.showerror("Ошибка", f"Некорректное значение в поле x{i}")
                     return
 
-            # Преобразуем в numpy массив и нормализуем
+            # numpy массив и нормализуем
             X_reg = np.array([x_values])
             X_reg_scaled = {}
             for model_type in ['yn', 'yc', 'yv']:
@@ -810,12 +808,12 @@ class KlystronAnalyzer:
             for model_type in ['zn', 'zc', 'zv']:
                 X_class_scaled[model_type] = self.scalers_class[model_type].transform(X_class)
 
-            # Прогнозируем состояния
+            # Прогноз состояния
             z_pred = {}
             for model_type in ['zn', 'zc', 'zv']:
                 z_pred[model_type] = self.classification_models[model_type].predict(X_class_scaled[model_type])[0]
 
-            # Формируем результат
+            # сборка результатов
             result_text = "=== РЕЗУЛЬТАТЫ ПРОГНОЗИРОВАНИЯ ===\n\n"
             result_text += "1. Прогнозируемая выходная мощность:\n"
             result_text += f"  - Низкие частоты (Yн): {y_pred['yn']:.2f}\n"
@@ -827,7 +825,7 @@ class KlystronAnalyzer:
                 state = self.class_mapping.get(z_pred[model_type], "неизвестно")
                 result_text += f"  - {self.code_names[model_type]}: {state}\n"
 
-            # Выводим результат
+            # Вывод результатов
             self.results_text.delete(1.0, tk.END)
             self.results_text.insert(tk.END, result_text)
 
