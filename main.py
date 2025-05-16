@@ -25,9 +25,13 @@ class KlystronAnalyzer:
         self.root.title("Анализатор блоков усилителей мощности клистронов")
         self.root.geometry("1400x700")
 
-        # Путь по умолчанию к файлу параметров
-        self.default_regression_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'regression_params.json')
-        self.regression_file_path = tk.StringVar(value="regression_params.json")  # Строка остаётся пустой
+        # Пути по умолчанию к файлам параметров
+        self.default_regression_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                    'regression_params.json')
+        self.default_classification_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                                        'classification_params.json')
+        self.regression_file_path = tk.StringVar(value="regression_params.json")
+        self.classification_file_path = tk.StringVar(value="classification_params.json")
 
         # Загрузка параметров из JSON-файлов
         self.load_model_parameters()
@@ -79,66 +83,101 @@ class KlystronAnalyzer:
 
     def load_model_parameters(self):
         """Загрузка параметров моделей из JSON-файлов"""
+        valid_reg = True
+        valid_class = True
         try:
-            # Путь к файлу
+            # Путь к файлу регрессии
             if self.regression_file_path.get().strip():
-                path = self.regression_file_path.get()
+                reg_path = self.regression_file_path.get()
             else:
-                path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'regression_params.json')
+                reg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'regression_params.json')
 
-            with open(path, 'r', encoding='utf-8') as f:
-                data = json.load(f)
+            with open(reg_path, 'r', encoding='utf-8') as f:
+                reg_data = json.load(f)
 
-            # Проверка на наличие нужных ключей и param_grid
+            # Проверка на наличие нужных ключей и param_grid для регрессии
             required_keys = ['yn', 'yc', 'yv']
-            valid = True
+
             for key in required_keys:
-                if key not in data:
-                    valid = False
+                if key not in reg_data:
+                    valid_reg = False
                     break
-                if 'param_grid' not in data[key]:
-                    valid = False
+                if 'param_grid' not in reg_data[key]:
+                    valid_reg = False
                     break
 
-            if not valid:
-                messagebox.showwarning("Неверный файл",
+            if not valid_reg:
+                messagebox.showwarning("Неверный файл регрессии",
                                        "Выбранный JSON-файл не содержит нужных объектов. Будет использован файл по умолчанию.")
                 # Загружаем файл по умолчанию
-                default_path = os.path.join('regression_params.json')
-                self.regression_file_path.set(default_path)
-                with open(default_path, 'r', encoding='utf-8') as f:
+                default_reg_path = os.path.join('regression_params.json')
+                self.regression_file_path.set(default_reg_path)
+                with open(default_reg_path, 'r', encoding='utf-8') as f:
                     self.regression_params = json.load(f)
             else:
-                self.regression_params = data
+                self.regression_params = reg_data
 
-            # Классификационные параметры — без проверки, как раньше
-            classification_params_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                                      'classification_params.json')
-            with open(classification_params_path, 'r', encoding='utf-8') as f:
-                self.classification_params = json.load(f)
+            # Путь к файлу классификации
+            if self.classification_file_path.get().strip():
+                class_path = self.classification_file_path.get()
+            else:
+                class_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'classification_params.json')
 
-                # проверка всех моделей
-                required_models = ['yn', 'yc', 'yv', 'zn', 'zc', 'zv']
-                reg_models = ['yn', 'yc', 'yv']
-                class_models = ['zn', 'zc', 'zv']
+            with open(class_path, 'r', encoding='utf-8') as f:
+                class_data = json.load(f)
 
-                for model in reg_models:
-                    if model not in self.regression_params:
-                        raise ValueError(f"Не найдены параметры для модели регрессии {model}")
+            # Проверка на наличие нужных ключей и param_grid для классификации
+            required_keys = ['zn', 'zc', 'zv']
+            for key in required_keys:
+                if key not in class_data:
+                    valid_class = False
+                    break
+                if 'param_grid' not in class_data[key]:
+                    valid_class = False
+                    break
 
-                for model in class_models:
-                    if model not in self.classification_params:
-                        raise ValueError(f"Не найдены параметры для модели классификации {model}")
+            if not valid_class:
+                messagebox.showwarning("Неверный файл классификации",
+                                       "Выбранный JSON-файл не содержит нужных объектов. Будет использован файл по умолчанию.")
+                # Загружаем файл по умолчанию
+                default_class_path = os.path.join('classification_params.json')
+                self.classification_file_path.set(default_class_path)
+                with open(default_class_path, 'r', encoding='utf-8') as f:
+                    self.classification_params = json.load(f)
+            else:
+                self.classification_params = class_data
+
+            # проверка всех моделей
+            required_models = ['yn', 'yc', 'yv', 'zn', 'zc', 'zv']
+            reg_models = ['yn', 'yc', 'yv']
+            class_models = ['zn', 'zc', 'zv']
+
+            for model in reg_models:
+                if model not in self.regression_params:
+                    raise ValueError(f"Не найдены параметры для модели регрессии {model}")
+
+            for model in class_models:
+                if model not in self.classification_params:
+                    raise ValueError(f"Не найдены параметры для модели классификации {model}")
 
         except FileNotFoundError as e:
             messagebox.showerror("Ошибка", f"Файл параметров не найден: {str(e)}")
-            self.regression_file_path.set('regression_params.json')
+            if not valid_reg:
+                self.regression_file_path.set('regression_params.json')
+            if not valid_class:
+                self.classification_file_path.set('classification_params.json')
         except json.JSONDecodeError as e:
             messagebox.showerror("Ошибка", f"Ошибка формата JSON в файле параметров: {str(e)}")
-            self.regression_file_path.set('regression_params.json')
+            if not valid_reg:
+                self.regression_file_path.set('regression_params.json')
+            if not valid_class:
+                self.classification_file_path.set('classification_params.json')
         except Exception as e:
             messagebox.showerror("Ошибка", f"Ошибка при загрузке параметров моделей: {str(e)}")
-            self.regression_file_path.set('regression_params.json')
+            if not valid_reg:
+                self.regression_file_path.set('regression_params.json')
+            if not valid_class:
+                self.classification_file_path.set('classification_params.json')
 
     def create_main_menu(self):
         """Создание главного меню приложения"""
@@ -282,7 +321,7 @@ class KlystronAnalyzer:
         zn_frame.grid(row=0, column=0, padx=5, pady=5, sticky='nsew')
 
         ttk.Button(zn_frame, text="Обучить модель", command=lambda: self.train_classification_model('zn')).pack(pady=5)
-        self.zn_metrics = tk.Text(zn_frame, height=35, width=30)
+        self.zn_metrics = tk.Text(zn_frame, height=25, width=30)
         self.zn_metrics.pack(padx=5, pady=5, fill='both', expand=True)
 
         # Модель zc (средние частоты)
@@ -290,7 +329,7 @@ class KlystronAnalyzer:
         zc_frame.grid(row=0, column=1, padx=5, pady=5, sticky='nsew')
 
         ttk.Button(zc_frame, text="Обучить модель", command=lambda: self.train_classification_model('zc')).pack(pady=5)
-        self.zc_metrics = tk.Text(zc_frame, height=35, width=30)
+        self.zc_metrics = tk.Text(zc_frame, height=25, width=30)
         self.zc_metrics.pack(padx=5, pady=5, fill='both', expand=True)
 
         # Модель zв (высокие частоты)
@@ -298,13 +337,40 @@ class KlystronAnalyzer:
         zv_frame.grid(row=0, column=2, padx=5, pady=5, sticky='nsew')
 
         ttk.Button(zv_frame, text="Обучить модель", command=lambda: self.train_classification_model('zv')).pack(pady=5)
-        self.zv_metrics = tk.Text(zv_frame, height=35, width=30)
+        self.zv_metrics = tk.Text(zv_frame, height=25, width=30)
         self.zv_metrics.pack(padx=5, pady=5, fill='both', expand=True)
 
         # Настройка сетки
         models_frame.grid_columnconfigure(0, weight=1)
         models_frame.grid_columnconfigure(1, weight=1)
         models_frame.grid_columnconfigure(2, weight=1)
+
+        # Выбор JSON-файла параметров
+        default_path = os.path.join('classification_params.json')
+        self.classification_file_path = tk.StringVar(value=default_path)
+
+        # Создаём фрейм для выбора файла
+        file_select_frame = ttk.Frame(classification_frame)
+        file_select_frame.pack(padx=10, pady=(0, 10), fill='x')
+
+        ttk.Label(file_select_frame, text="Файл с параметрами классификационной модели:").pack(side='left', padx=(0, 5))
+
+        file_entry = ttk.Entry(file_select_frame, textvariable=self.classification_file_path, width=60,
+                               state='readonly')
+        file_entry.pack(side='left', padx=5, fill='x', expand=True)
+
+        ttk.Button(file_select_frame, text="Выбрать файл", command=self.select_classification_file).pack(side='left',
+                                                                                                         padx=5)
+
+    def select_classification_file(self):
+        """Открыть диалог для выбора JSON-файла параметров для классификации"""
+        file_path = filedialog.askopenfilename(
+            title="Выберите JSON-файл параметров классификационных моделей",
+            filetypes=[("JSON файлы", "*.json")]
+        )
+        if file_path:
+            self.classification_file_path.set(file_path)
+            self.load_model_parameters()
 
     def create_prediction_tab(self):
         """Создание вкладки прогнозирования"""
