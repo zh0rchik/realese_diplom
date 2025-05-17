@@ -1,3 +1,4 @@
+altgraph==0.17.4
 asgiref==3.7.2
 asttokens==3.0.0
 colorama==0.4.6
@@ -27,16 +28,20 @@ openpyxl==3.1.5
 packaging==24.2
 pandas==2.2.3
 parso==0.8.4
+pefile==2023.2.7
 pillow==11.1.0
 platformdirs==4.3.6
 prompt_toolkit==3.0.50
 psutil==6.1.1
 pure_eval==0.2.3
 Pygments==2.19.1
+pyinstaller==6.13.0
+pyinstaller-hooks-contrib==2025.4
 pyparsing==3.2.3
 python-dateutil==2.9.0.post0
 pytz==2025.1
 pywin32==308
+pywin32-ctypes==0.2.3
 pyzmq==26.2.1
 scikit-learn==1.6.1
 scipy==1.15.1
