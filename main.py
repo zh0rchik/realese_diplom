@@ -25,6 +25,9 @@ class KlystronAnalyzer:
         self.root.title("Анализатор блоков усилителей мощности клистронов")
         self.root.geometry("1400x700")
 
+        # Флаг для отслеживания текущего состояния обучения
+        self.training_in_progress = False
+
         # Пути по умолчанию к файлам параметров
         self.default_regression_path = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                                     'regression_params.json')
@@ -505,13 +508,22 @@ class KlystronAnalyzer:
             messagebox.showwarning("Предупреждение", "Сначала загрузите данные для регрессии")
             return
 
+        # Проверка, не запущен ли уже процесс обучения
+        if hasattr(self, 'training_in_progress') and self.training_in_progress:
+            messagebox.showinfo("Информация", "Процесс обучения уже запущен")
+            return
+
+        self.training_in_progress = True
+
         # отображение экрана загрузки
         self.notebook.pack_forget()
         self.loading_frame.pack(fill='both', expand=True)
         self.progress.start()
 
         # Запуск обучения в отдельном потоке
-        threading.Thread(target=self._train_regression_thread, args=(model_type,)).start()
+        thread = threading.Thread(target=self._train_regression_thread, args=(model_type,))
+        thread.daemon = True  # Делаем поток демоном, чтобы он завершился при закрытии программы
+        thread.start()
 
     def _train_regression_thread(self, model_type):
         """Поток для обучения модели регрессии"""
@@ -572,7 +584,7 @@ class KlystronAnalyzer:
                 param_grid=simplified_param_grid,
                 cv=cv,
                 scoring='neg_mean_absolute_percentage_error',
-                n_jobs=-1,
+                n_jobs=1,  # Изменено с -1 на 1, чтобы избежать проблем с многопроцессностью в exe
                 verbose=0
             )
 
@@ -582,7 +594,6 @@ class KlystronAnalyzer:
             # Лучшая модель
             best_model = grid_search.best_estimator_
             self.regression_models[model_type] = best_model
-            print(best_model)
 
             # Прогнозирование на тестовом наборе
             y_pred = best_model.predict(X_test_scaled)
@@ -598,16 +609,19 @@ class KlystronAnalyzer:
                 'best_params': grid_search.best_params_
             }
 
-            # Обновление интерфейса
+            # Обновление интерфейса через очередь событий Tkinter
             self.root.after(0, lambda: self._update_regression_ui(model_type))
 
-            # Скрываем экран загрузки
-            self.root.after(0, self._hide_loading)
-
         except Exception as e:
+            import traceback
+            print(f"Ошибка при обучении модели {model_type}: {str(e)}")
+            print(traceback.format_exc())
             self.root.after(0, lambda: messagebox.showerror("Ошибка",
                                                             f"Ошибка при обучении модели {model_type}: {str(e)}"))
+        finally:
+            # Скрываем экран загрузки и сбрасываем флаг обучения
             self.root.after(0, self._hide_loading)
+            self.root.after(0, lambda: setattr(self, 'training_in_progress', False))
 
     def _update_regression_ui(self, model_type):
         """Обновление интерфейса после обучения модели регрессии"""
@@ -631,13 +645,22 @@ class KlystronAnalyzer:
             messagebox.showwarning("Предупреждение", "Сначала загрузите данные для классификации")
             return
 
+        # Проверка, не запущен ли уже процесс обучения
+        if hasattr(self, 'training_in_progress') and self.training_in_progress:
+            messagebox.showinfo("Информация", "Процесс обучения уже запущен")
+            return
+
+        self.training_in_progress = True
+
         # Показываем экран загрузки
         self.notebook.pack_forget()
         self.loading_frame.pack(fill='both', expand=True)
         self.progress.start()
 
         # Запуск обучения в отдельном потоке
-        threading.Thread(target=self._train_classification_thread, args=(model_type,)).start()
+        thread = threading.Thread(target=self._train_classification_thread, args=(model_type,))
+        thread.daemon = True  # Делаем поток демоном, чтобы он завершился при закрытии программы
+        thread.start()
 
     @staticmethod
     def balance_classes(X, y):
@@ -732,7 +755,7 @@ class KlystronAnalyzer:
                 param_grid=simplified_param_grid,
                 cv=cv,
                 scoring='f1_macro',
-                n_jobs=-1,
+                n_jobs=1,  # Изменено с -1 на 1, чтобы избежать проблем с многопроцессностью в exe
                 verbose=1
             )
 
@@ -746,7 +769,7 @@ class KlystronAnalyzer:
             y_pred = best_model.predict(X_test_scaled)
 
             # Вычисление метрик
-            f1 = f1_score(y_test, y_pred, average='weighted') # weighted означает, что набор данных несбалансированный.
+            f1 = f1_score(y_test, y_pred, average='weighted')  # weighted означает, что набор данных несбалансированный.
             report = classification_report(y_test, y_pred, target_names=self.class_mapping.values())
 
             # Сохранение метрик
@@ -767,14 +790,17 @@ class KlystronAnalyzer:
 
             # Обновление интерфейса
             self.root.after(0, lambda: self._update_classification_ui(model_type))
-            self.root.after(0, self._hide_loading)
 
         except Exception as e:
+            import traceback
+            print(f"Ошибка при обучении модели {model_type}: {str(e)}")
+            print(traceback.format_exc())
             self.root.after(0, lambda: messagebox.showerror("Ошибка",
                                                             f"Ошибка при обучении модели {model_type}: {str(e)}"))
+        finally:
+            # Скрываем экран загрузки и сбрасываем флаг обучения
             self.root.after(0, self._hide_loading)
-            import traceback
-            traceback.print_exc()
+            self.root.after(0, lambda: setattr(self, 'training_in_progress', False))
 
     def _update_classification_ui(self, model_type):
         """Обновление интерфейса после обучения модели классификации"""
@@ -795,9 +821,12 @@ class KlystronAnalyzer:
 
     def _hide_loading(self):
         """Скрытие экрана загрузки"""
-        self.progress.stop()
-        self.loading_frame.pack_forget()
-        self.notebook.pack(padx=10, pady=10, fill='both', expand=True)
+        try:
+            self.progress.stop()
+            self.loading_frame.pack_forget()
+            self.notebook.pack(padx=10, pady=10, fill='both', expand=True)
+        except Exception as e:
+            print(f"Ошибка при скрытии экрана загрузки: {str(e)}")
 
     def show_metrics(self):
         """Показ всех метрик в отдельном окне"""
@@ -849,9 +878,9 @@ class KlystronAnalyzer:
     def fill_sample_data(self):
         """Заполнение полей ввода примерными данными"""
         sample_data = {
-            'x1': 9.5, 'x2': 10.95, 'x3': 4.3, 'x4': 93.2, 'x5': 3.9,
-            'x6': 9.5, 'x7': 274, 'x8': 31, 'x9': 0.95, 'x10': 50.53,
-            'u': 10.8, 't': 73
+            'x1': 9, 'x2': 12.6, 'x3': 4.53, 'x4': 88.1, 'x5': 0.3,
+            'x6': 8.3, 'x7': 311, 'x8': 29.8, 'x9': 1.2, 'x10': 49.8,
+            'u': 11.8, 't': 70
         }
 
         for key, entry in self.x_entries.items():

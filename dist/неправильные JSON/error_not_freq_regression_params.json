@@ -1,0 +1,45 @@
+{
+    "yn": {
+        "target_column": "Yн",
+        "random_state_split": 73,
+        "test_size_cv": 0.1,
+        "random_state_mlp": 42,
+        "random_state_cv": 42,
+        "param_grid": {
+            "hidden_layer_sizes": [[8, 10, 8, 10]],
+            "activation": ["logistic"],
+            "solver": ["adam"],
+            "alpha": [0.92, 1.0],
+            "beta_1": [0.85, 0.9],
+            "beta_2": [0.9, 0.95],
+            "early_stopping": [true],
+            "learning_rate_init": [0.03, 0.05],
+            "tol": [0.01],
+            "epsilon": [1e-6],
+            "max_iter": [200],
+            "n_iter_no_change": [5, 10],
+            "validation_fraction": [0.3]
+        }
+    },
+    "yc": {
+        "target_column": "Yс",
+        "random_state_split": 142,
+        "test_size_cv": 0.2,
+        "random_state_mlp": 73,
+        "random_state_cv": 73,
+        "param_grid" : {
+            "hidden_layer_sizes": [[6, 8, 6]],
+            "activation": ["logistic"],
+            "solver": ["adam"],
+            "beta_1": [0.95],
+            "beta_2": [0.99],
+            "epsilon": [1e-4],
+            "alpha": [0.3],
+            "learning_rate_init": [0.005, 0.01],
+            "early_stopping": [true],
+            "n_iter_no_change": [5, 10],
+            "max_iter": [500],
+            "tol": [0.01]
+        }
+    }
+}
