@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from sklearn.model_selection import train_test_split, GridSearchCV, ShuffleSplit, StratifiedKFold
 from sklearn.neural_network import MLPRegressor, MLPClassifier
-from sklearn.metrics import mean_absolute_percentage_error, mean_squared_error, f1_score, classification_report
+from sklearn.metrics import mean_absolute_percentage_error, mean_squared_error, f1_score, classification_report, \
+    confusion_matrix, ConfusionMatrixDisplay
 from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import SMOTE
 from sklearn.utils.class_weight import compute_class_weight
@@ -584,7 +585,7 @@ class KlystronAnalyzer:
                 param_grid=simplified_param_grid,
                 cv=cv,
                 scoring='neg_mean_absolute_percentage_error',
-                n_jobs=-1,  # Изменено с -1 на 1, чтобы избежать проблем с многопроцессностью в exe
+                n_jobs=1,  # Изменено с -1 на 1, чтобы избежать проблем с многопроцессностью в exe
                 verbose=0
             )
 
@@ -755,7 +756,7 @@ class KlystronAnalyzer:
                 param_grid=simplified_param_grid,
                 cv=cv,
                 scoring='f1_macro',
-                n_jobs=-1,  # Изменено с -1 на 1, чтобы избежать проблем с многопроцессностью в exe
+                n_jobs=1,  # Изменено с -1 на 1, чтобы избежать проблем с многопроцессностью в exe
                 verbose=1
             )
 
@@ -790,6 +791,12 @@ class KlystronAnalyzer:
 
             # Обновление интерфейса
             self.root.after(0, lambda: self._update_classification_ui(model_type))
+
+            cm = confusion_matrix(y_test, y_pred)
+            disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=range(1, cm.shape[0] + 1))
+            disp.plot(cmap='Blues')
+            plt.title(f"Матрица ошибок {model_type} (тестовая выборка)")
+            plt.show()
 
         except Exception as e:
             import traceback
