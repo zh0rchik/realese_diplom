@@ -6,19 +6,19 @@
         "random_state_mlp": 42,
         "random_state_cv": 42,
         "param_grid": {
-            "hidden_layer_sizes": [[10], [12]],
+            "hidden_layer_sizes": [[8], [10]],
             "activation": ["logistic"],
             "solver": ["adam"],
-            "alpha": [0.96, 1.0],
-            "beta_1": [0.8, 0.85],
+            "alpha": [0.92, 1.0],
+            "beta_1": [0.85, 0.9],
             "beta_2": [0.95, 0.99],
             "early_stopping": [true],
-            "learning_rate_init": [0.03, 0.05],
-            "tol": [0.01, 0.1],
+            "learning_rate_init": [0.05],
+            "tol": [0.01, 0.05],
             "epsilon": [1e-6],
             "max_iter": [200],
             "n_iter_no_change": [5, 10],
-            "validation_fraction": [0.1, 0.3]
+            "validation_fraction": [0.3]
         }
     },
     "yc": {
@@ -28,17 +28,17 @@
         "random_state_mlp": 73,
         "random_state_cv": 73,
         "param_grid" : {
-            "hidden_layer_sizes": [[12], [14]],
+            "hidden_layer_sizes": [[12], [13]],
             "activation": ["logistic"],
             "solver": ["adam"],
             "beta_1": [0.85, 0.95],
-            "beta_2": [0.99, 0.998],
+            "beta_2": [0.99],
             "epsilon": [1e-6],
-            "alpha": [0.3, 0.4],
+            "alpha": [0.3, 0.5],
             "learning_rate_init": [0.001, 0.01],
             "early_stopping": [true],
             "n_iter_no_change": [5, 10],
-            "max_iter": [350, 500],
+            "max_iter": [350],
             "tol": [1e-4, 0.01]
         }
     },
@@ -52,15 +52,15 @@
             "solver": ["sgd"],
             "activation": ["logistic"],
             "alpha": [0.95, 1.0],
-            "hidden_layer_sizes": [[8], [9]],
+            "hidden_layer_sizes": [[8], [10]],
             "max_iter": [750],
             "epsilon": [1e-5, 1e-7],
-            "learning_rate": ["constant", "invscaling"],
+            "learning_rate": ["invscaling", "adaptive"],
             "learning_rate_init": [0.05, 0.5],
-            "momentum": [0.5, 0.7],
+            "momentum": [0.3, 0.5],
             "nesterovs_momentum": [true],
-            "tol": [0.0001, 0.001],
-            "n_iter_no_change": [10, 15],
+            "tol": [0.0001],
+            "n_iter_no_change": [15],
             "early_stopping": [true]
         }
     }

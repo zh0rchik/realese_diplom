@@ -9,7 +9,7 @@
         "param_grid": {
             "activation": ["relu", "tanh", "logistic"],
             "alpha": [0.0001, 0.0005, 0.001, 0.005, 0.01],
-            "hidden_layer_sizes": [[4, 10], [5], [4], [15], [5, 5]],
+            "hidden_layer_sizes": [[4, 10], [5], [4]],
             "solver": ["lbfgs"],
             "tol": [1e-7, 1e-6, 1e-5],
             "max_iter": [200, 500]
@@ -24,7 +24,7 @@
         "param_grid": {
             "activation": ["relu", "tanh", "logistic"],
             "alpha": [0.0001, 0.001, 0.01, 0.1],
-            "hidden_layer_sizes": [[5], [10], [15], [10, 5], [20, 10], [30, 15, 5]],
+            "hidden_layer_sizes": [[5], [10], [10, 5]],
             "solver": ["lbfgs"],
             "tol": [1e-6, 1e-5, 1e-4],
             "max_iter": [250, 500]
@@ -43,7 +43,7 @@
             "hidden_layer_sizes": [[5], [8], [10], [15], [5, 5], [10, 5]],
             "solver": ["lbfgs"],
             "tol": [1e-7, 1e-6, 1e-5],
-            "max_iter": [250, 500, 1000]
+            "max_iter": [250, 500]
         }
     }
 }

@@ -792,11 +792,25 @@ class KlystronAnalyzer:
             # Обновление интерфейса
             self.root.after(0, lambda: self._update_classification_ui(model_type))
 
+            # Сохранение матрицы ошибок в файл вместо отображения
             cm = confusion_matrix(y_test, y_pred)
+
+            # Создаем фигуру и оси
+            fig, ax = plt.subplots(figsize=(8, 6))
             disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=range(1, cm.shape[0] + 1))
-            disp.plot(cmap='Blues')
+            disp.plot(cmap='Blues', ax=ax)
             plt.title(f"Матрица ошибок {model_type} (тестовая выборка)")
-            plt.show()
+
+            # Создаем директорию для сохранения, если она не существует
+            results_dir = os.path.join(os.getcwd(), "confusion_matrices")
+            os.makedirs(results_dir, exist_ok=True)
+
+            # Сохраняем матрицу ошибок в файл
+            filename = os.path.join(results_dir, f"confusion_matrix_{model_type}.png")
+            plt.savefig(filename)
+            plt.close(fig)  # Закрываем фигуру, освобождая память
+
+            print(f"Матрица ошибок сохранена в файл: {filename}")
 
         except Exception as e:
             import traceback

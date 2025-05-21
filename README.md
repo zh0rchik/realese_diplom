@@ -2,7 +2,7 @@ Python 3.11
 
 Клонирование
 ```python
-git clone https://github.com/zh0rchik/diplom.git
+git clone https://github.com/zh0rchik/release_diplom.git
 ```
 Зависимости проекта
 ```python
