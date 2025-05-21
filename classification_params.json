@@ -7,15 +7,12 @@
         "random_state_cv": 42,
         "random_state_mlp": 42,
         "param_grid": {
-            "activation": ["relu"],
-            "alpha": [0.001, 0.01, 0.1],
-            "hidden_layer_sizes": [[4], [5], [6]],
-            "learning_rate": ["constant"],
-            "learning_rate_init": [1e-5, 1e-4, 0.001, 0.01, 0.1],
+            "activation": ["relu", "tanh", "logistic"],
+            "alpha": [0.0001, 0.0005, 0.001, 0.005, 0.01],
+            "hidden_layer_sizes": [[4, 10], [5], [4], [15], [5, 5]],
             "solver": ["lbfgs"],
-            "tol": [1e-6, 1e-5, 1e-4],
-            "early_stopping": [true],
-            "max_iter": [500]
+            "tol": [1e-7, 1e-6, 1e-5],
+            "max_iter": [200, 500]
         }
     },
     "zc": {
@@ -26,13 +23,11 @@
         "random_state_cv": 42,
         "param_grid": {
             "activation": ["relu", "tanh", "logistic"],
-            "alpha": [0.001, 0.01, 0.1],
-            "hidden_layer_sizes": [[5], [10], [15]],
-            "learning_rate": ["constant"],
-            "learning_rate_init": [1e-5, 1e-4, 0.001, 0.01, 0.1],
+            "alpha": [0.0001, 0.001, 0.01, 0.1],
+            "hidden_layer_sizes": [[5], [10], [15], [10, 5], [20, 10], [30, 15, 5]],
             "solver": ["lbfgs"],
             "tol": [1e-6, 1e-5, 1e-4],
-            "max_iter": [500]
+            "max_iter": [250, 500]
         }
     },
     "zv": {
@@ -44,15 +39,11 @@
         "random_state_mlp": 42,
         "param_grid": {
             "activation": ["relu", "tanh", "logistic"],
-            "alpha": [0.005, 0.01, 0.05],
-            "hidden_layer_sizes": [[6], [8], [10]],
-            "learning_rate": ["constant"],
-            "learning_rate_init": [1e-8, 1e-7, 1e-6],
-            "solver": ["lbfgs", "adam"],
-            "tol": [1e-6, 1e-5, 1e-4],
-            "max_iter": [400, 500],
-            "early_stopping": [true],
-            "n_iter_no_change": [5, 7]
+            "alpha": [0.005, 0.01, 0.05, 0.1],
+            "hidden_layer_sizes": [[5], [8], [10], [15], [5, 5], [10, 5]],
+            "solver": ["lbfgs"],
+            "tol": [1e-7, 1e-6, 1e-5],
+            "max_iter": [250, 500, 1000]
         }
     }
 }

@@ -584,7 +584,7 @@ class KlystronAnalyzer:
                 param_grid=simplified_param_grid,
                 cv=cv,
                 scoring='neg_mean_absolute_percentage_error',
-                n_jobs=1,  # Изменено с -1 на 1, чтобы избежать проблем с многопроцессностью в exe
+                n_jobs=-1,  # Изменено с -1 на 1, чтобы избежать проблем с многопроцессностью в exe
                 verbose=0
             )
 
@@ -755,7 +755,7 @@ class KlystronAnalyzer:
                 param_grid=simplified_param_grid,
                 cv=cv,
                 scoring='f1_macro',
-                n_jobs=1,  # Изменено с -1 на 1, чтобы избежать проблем с многопроцессностью в exe
+                n_jobs=-1,  # Изменено с -1 на 1, чтобы избежать проблем с многопроцессностью в exe
                 verbose=1
             )
 
@@ -880,7 +880,7 @@ class KlystronAnalyzer:
         sample_data = {
             'x1': 9, 'x2': 12.6, 'x3': 4.53, 'x4': 88.1, 'x5': 0.3,
             'x6': 8.3, 'x7': 311, 'x8': 29.8, 'x9': 1.2, 'x10': 49.8,
-            'u': 11.8, 't': 70
+            'u': 12.5, 't': 70
         }
 
         for key, entry in self.x_entries.items():
