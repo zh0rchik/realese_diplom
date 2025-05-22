@@ -9,7 +9,7 @@
             "hidden_layer_sizes": [[8], [10]],
             "activation": ["logistic"],
             "solver": ["adam"],
-            "alpha": [0.92, 1.0],
+            "alpha": [0.9, 0.92],
             "beta_1": [0.85, 0.9],
             "beta_2": [0.95, 0.99],
             "early_stopping": [true],
@@ -18,7 +18,8 @@
             "epsilon": [1e-6],
             "max_iter": [200],
             "n_iter_no_change": [5, 10],
-            "validation_fraction": [0.3]
+            "validation_fraction": [0.3],
+            "batch_size": [12, "auto"]
         }
     },
     "yc": {
@@ -52,7 +53,7 @@
             "solver": ["sgd"],
             "activation": ["logistic"],
             "alpha": [0.95, 1.0],
-            "hidden_layer_sizes": [[8], [10]],
+            "hidden_layer_sizes": [[8], [9]],
             "max_iter": [750],
             "epsilon": [1e-5, 1e-7],
             "learning_rate": ["invscaling", "adaptive"],
@@ -61,7 +62,8 @@
             "nesterovs_momentum": [true],
             "tol": [0.0001],
             "n_iter_no_change": [15],
-            "early_stopping": [true]
+            "early_stopping": [true],
+            "power_t": [0.3, 0.5, 0.7]
         }
     }
 }
