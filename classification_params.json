@@ -6,12 +6,13 @@
         "random_state_smote": 42,
         "random_state_cv": 42,
         "random_state_mlp": 42,
+        "use_smote": true,
         "param_grid": {
-            "activation": ["relu", "tanh", "logistic"],
-            "alpha": [0.0001, 0.0005, 0.001, 0.005, 0.01],
-            "hidden_layer_sizes": [[4, 10], [5], [4]],
+            "activation": ["relu"],
+            "alpha": [0.0005, 0.005, 0.05],
+            "hidden_layer_sizes": [[4, 10], [5, 5], [10, 10]],
             "solver": ["lbfgs"],
-            "tol": [1e-7, 1e-6, 1e-5],
+            "tol": [1e-7, 1e-5],
             "max_iter": [200, 500]
         }
     },
@@ -21,12 +22,13 @@
         "random_state_split": 42,
         "random_state_smote": 42,
         "random_state_cv": 42,
+        "use_smote": true,
         "param_grid": {
-            "activation": ["relu", "tanh", "logistic"],
-            "alpha": [0.0001, 0.001, 0.01, 0.1],
-            "hidden_layer_sizes": [[5], [10], [10, 5]],
-            "solver": ["lbfgs"],
-            "tol": [1e-6, 1e-5, 1e-4],
+            "activation": ["logistic"],
+            "alpha": [0.0001, 0.001],
+            "hidden_layer_sizes": [[5, 7], [7, 9]],
+            "solver": ["lbfgs", "adam"],
+            "tol": [1e-4, 1e-6, 1e-8],
             "max_iter": [250, 500]
         }
     },
@@ -37,12 +39,13 @@
         "random_state_smote": 42,
         "random_state_cv": 42,
         "random_state_mlp": 42,
+        "use_smote": true,
         "param_grid": {
-            "activation": ["relu", "tanh", "logistic"],
-            "alpha": [0.005, 0.01, 0.05, 0.1],
-            "hidden_layer_sizes": [[5], [8], [10], [15], [5, 5], [10, 5]],
-            "solver": ["lbfgs"],
-            "tol": [1e-7, 1e-6, 1e-5],
+            "activation": ["relu", "logistic"],
+            "alpha": [0.05, 0.1, 0.5],
+            "hidden_layer_sizes": [[12, 6], [15, 9]],
+            "solver": ["lbfgs", "adam"],
+            "tol": [1e-7, 1e-8, 1e-9],
             "max_iter": [250, 500]
         }
     }

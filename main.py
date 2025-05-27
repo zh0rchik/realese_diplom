@@ -20,7 +20,7 @@ import json
 warnings.filterwarnings('ignore')
 
 
-class KlystronAnalyzer:
+class MyApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Оценка качества функционирования блока усилителя мощности радиолокационной станции с использованием нейронной сети")
@@ -607,7 +607,8 @@ class KlystronAnalyzer:
             self.regression_metrics[model_type] = {
                 'MAPE': mape,
                 'RMSE': rmse,
-                'best_params': grid_search.best_params_
+                'best_params': grid_search.best_params_,
+                'MAPE_CV': grid_search.best_score_
             }
 
             # Обновление интерфейса через очередь событий Tkinter
@@ -663,24 +664,6 @@ class KlystronAnalyzer:
         thread.daemon = True  # Делаем поток демоном, чтобы он завершился при закрытии программы
         thread.start()
 
-    @staticmethod
-    def balance_classes(X, y):
-        """Балансировка классов с помощью SMOTE и вычисление весов классов"""
-        try:
-            # Рассчитываем веса классов
-            classes = np.unique(y)
-            class_weights = compute_class_weight(class_weight='balanced', classes=classes, y=y)
-            class_weight_dict = {cls: weight for cls, weight in zip(classes, class_weights)}
-
-            # Используем SMOTE для балансировки (только если есть более 1 образца для каждого класса)
-            smote = SMOTE(k_neighbors=min(5, len(y) - 1), random_state=42)
-            X_resampled, y_resampled = smote.fit_resample(X, y)
-
-            return X_resampled, y_resampled, class_weight_dict
-        except ValueError as e:
-            print(f"Ошибка балансировки: {str(e)}")
-            return X, y, {cls: 1.0 for cls in np.unique(y)}
-
     def _train_classification_thread(self, model_type):
         """Поток для обучения модели классификации"""
         try:
@@ -718,13 +701,23 @@ class KlystronAnalyzer:
             # Сохраняем скейлер
             self.scalers_class[model_type] = scaler
 
-            # Балансировка классов с помощью SMOTE
+            #Балансировка классов с помощью SMOTE
+            use_smote = False
             try:
-                smote = SMOTE(k_neighbors=1, random_state=params.get('random_state_smote', 42))
-                X_train_balanced, y_train_balanced = smote.fit_resample(X_train_scaled, y_train)
-            except ValueError as e:
-                print(f"Ошибка SMOTE: {str(e)}. Используем оригинальные данные.")
-                X_train_balanced, y_train_balanced = X_train_scaled, y_train
+                use_smote = params['use_smote']
+            except KeyError:
+                pass
+
+            if use_smote:
+                try:
+                    smote = SMOTE(k_neighbors=1, random_state=params.get('random_state_smote', 42))
+                    X_train_balanced, y_train_balanced = smote.fit_resample(X_train_scaled, y_train)
+                except ValueError as e:
+                    print(f"Ошибка SMOTE: {str(e)}. Используем оригинальные данные.")
+                    X_train_balanced, y_train_balanced = X_train_scaled, y_train
+            else: X_train_balanced, y_train_balanced = X_train_scaled, y_train
+
+            #X_train_balanced, y_train_balanced = X_train_scaled, y_train
 
             # Логирование информации о балансировке
             print(f"\nБалансировка для {model_type}:")
@@ -771,10 +764,16 @@ class KlystronAnalyzer:
 
             # Вычисление метрик
             f1 = f1_score(y_test, y_pred, average='weighted')  # weighted означает, что набор данных несбалансированный.
-            report = classification_report(y_test, y_pred, target_names=self.class_mapping.values())
+            report = classification_report(
+                y_test, y_pred,
+                labels=list(self.class_mapping.keys()),
+                target_names=list(self.class_mapping.values()),
+                zero_division=0
+            )
 
             # Сохранение метрик
             self.classification_metrics[model_type] = {
+                'F1-macro_CV': grid_search.best_score_,
                 'F1-score': f1,
                 'classification_report': report,
                 'best_params': grid_search.best_params_,
@@ -788,6 +787,7 @@ class KlystronAnalyzer:
             print("\nОтчёт по классификации для", model_type)
             print(report)
             print(f"F-мера ({model_type}): {f1:.4f}")
+            print(f"F_macro_CV: {grid_search.best_score_}")
 
             # Обновление интерфейса
             self.root.after(0, lambda: self._update_classification_ui(model_type))
@@ -878,6 +878,7 @@ class KlystronAnalyzer:
                 text_area.insert(tk.END, f"Модель: {self.code_names[model_type]}\n")
                 text_area.insert(tk.END, f"MAPE: {metrics['MAPE']:.2f}%\n")
                 text_area.insert(tk.END, f"RMSE: {metrics['RMSE']:.2f}\n")
+                text_area.insert(tk.END, f"MAPE_CV: {abs(metrics['MAPE_CV'] * 100):.2f}%\n")
                 text_area.insert(tk.END, "Лучшие параметры:\n")
                 for param, value in metrics['best_params'].items():
                     text_area.insert(tk.END, f"  {param}: {value}\n")
@@ -889,6 +890,7 @@ class KlystronAnalyzer:
             for model_type, metrics in self.classification_metrics.items():
                 text_area.insert(tk.END, f"Модель: {self.code_names[model_type]}\n")
                 text_area.insert(tk.END, f"F1-score: {metrics['F1-score']:.2f}\n")
+                text_area.insert(tk.END, f"F1-score_macro_CV: {metrics['F1-macro_CV']:.2f}\n")
                 text_area.insert(tk.END, "Отчет классификации:\n")
                 text_area.insert(tk.END, metrics['classification_report'])
                 text_area.insert(tk.END, "Лучшие параметры:\n")
@@ -899,9 +901,9 @@ class KlystronAnalyzer:
     def fill_sample_data(self):
         """Заполнение полей ввода примерными данными"""
         sample_data = {
-            'x1': 9, 'x2': 12.6, 'x3': 4.53, 'x4': 88.1, 'x5': 0.3,
-            'x6': 8.3, 'x7': 311, 'x8': 29.8, 'x9': 1.2, 'x10': 49.8,
-            'u': 12.5, 't': 70
+            'x1': 9.2, 'x2': 10, 'x3': 3.9, 'x4': 91.1, 'x5': 0.1,
+            'x6': 9.8, 'x7': 90, 'x8': 24, 'x9': 0.53, 'x10': 54.3,
+            'u': 10.2, 't': 72.23
         }
 
         for key, entry in self.x_entries.items():
@@ -1069,5 +1071,5 @@ class KlystronAnalyzer:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    app = KlystronAnalyzer(root)
+    app = MyApp(root)
     root.mainloop()

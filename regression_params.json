@@ -6,19 +6,19 @@
         "random_state_mlp": 42,
         "random_state_cv": 42,
         "param_grid": {
-            "hidden_layer_sizes": [[8], [10], [12]],
+            "hidden_layer_sizes": [[10], [12]],
             "activation": ["logistic"],
             "solver": ["adam"],
-            "alpha": [0.92, 0.96, 1.0],
-            "beta_1": [0.8, 0.85, 0.9],
-            "beta_2": [0.9, 0.95, 0.99],
+            "alpha": [0.88, 0.94, 1.0],
+            "beta_1": [0.8, 0.85],
+            "beta_2": [0.95, 0.975],
             "early_stopping": [true],
-            "learning_rate_init": [0.03, 0.04, 0.05],
-            "tol": [0.01, 0.05, 0.1],
-            "epsilon": [1e-6],
-            "max_iter": [200],
-            "n_iter_no_change": [5, 10],
-            "validation_fraction": [0.1, 0.2, 0.3],
+            "learning_rate_init": [0.1, 0.01],
+            "tol": [0.01, 1e-5],
+            "epsilon": [1e-8, 1e-6],
+            "max_iter": [200, 500],
+            "n_iter_no_change": [5, 15],
+            "validation_fraction": [0.3, 0.1],
             "batch_size": [12, "auto"]
         }
     },
@@ -35,18 +35,18 @@
             "beta_1": [0.85, 0.9, 0.95],
             "beta_2": [0.99, 0.998],
             "epsilon": [1e-6, 1e-4],
-            "alpha": [0.3, 0.4, 0.5],
-            "learning_rate_init": [0.001, 0.005, 0.01],
+            "alpha": [0.3, 0.5],
+            "learning_rate_init": [0.001, 0.01],
             "early_stopping": [true],
             "n_iter_no_change": [5, 10],
             "max_iter": [350, 500],
-            "tol": [1e-5, 1e-4, 0.01]
+            "tol": [1e-4, 0.01]
         }
     },
     "yv": {
         "target_column": "Yв",
-        "random_state_split": 21,
-        "test_size_cv": 0.25,
+        "random_state_split": 74,
+        "test_size_cv": 0.1,
         "random_state_mlp": 42,
         "random_state_cv": 42,
         "param_grid": {
