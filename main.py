@@ -94,7 +94,10 @@ class MyApp:
             if self.regression_file_path.get().strip():
                 reg_path = self.regression_file_path.get()
             else:
-                reg_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'regression_params.json')
+                reg_path = os.path.join(
+                    os.path.dirname(os.path.abspath(__file__)),
+                    'regression_params.json'
+                )
 
             with open(reg_path, 'r', encoding='utf-8') as f:
                 reg_data = json.load(f)
@@ -125,7 +128,10 @@ class MyApp:
             if self.classification_file_path.get().strip():
                 class_path = self.classification_file_path.get()
             else:
-                class_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'classification_params.json')
+                class_path = os.path.join(
+                    os.path.dirname(os.path.abspath(__file__)),
+                    'classification_params.json'
+                )
 
             with open(class_path, 'r', encoding='utf-8') as f:
                 class_data = json.load(f)
@@ -142,7 +148,8 @@ class MyApp:
 
             if not valid_class:
                 messagebox.showwarning("Неверный файл классификации",
-                                       "Выбранный JSON-файл не содержит нужных объектов. Будет использован файл по умолчанию.")
+                                       "Выбранный JSON-файл не содержит нужных объектов. "
+                                       "Будет использован файл по умолчанию.")
                 # Загружаем файл по умолчанию
                 default_class_path = os.path.join('classification_params.json')
                 self.classification_file_path.set(default_class_path)
@@ -197,7 +204,6 @@ class MyApp:
 
         # меню анализа
         analysis_menu = tk.Menu(menubar, tearoff=0)
-        analysis_menu.add_separator()
         analysis_menu.add_command(label="Вывести метрики", command=self.show_metrics)
         menubar.add_cascade(label="Анализ", menu=analysis_menu)
 
@@ -391,9 +397,22 @@ class MyApp:
 
         # Создание поля ввода для x1-x10
         self.x_entries = {}
+        self.label_x_entries = {
+            "x1": "А",
+            "x2": "В",
+            "x3": "А",
+            "x4": "%",
+            "x5": "мА",
+            "x6": "кВт",
+            "x7": "мВт",
+            "x8": "кВт",
+            "x9": "А",
+            "x10": "дБ"
+        }
         for i in range(10):
             row, col = divmod(i, 5)
-            ttk.Label(x_frame, text=f"х{i + 1}:").grid(row=row, column=col * 2, padx=5, pady=5, sticky='e')
+            label = f"x{i + 1}, [{self.label_x_entries[f'x{i + 1}']}]"
+            ttk.Label(x_frame, text=label).grid(row=row, column=col * 2, padx=5, pady=5, sticky='e')
             self.x_entries[f'x{i + 1}'] = ttk.Entry(x_frame, width=10)
             self.x_entries[f'x{i + 1}'].grid(row=row, column=col * 2 + 1, padx=5, pady=5, sticky='w')
 
@@ -401,11 +420,11 @@ class MyApp:
         ut_frame = ttk.Frame(input_frame)
         ut_frame.pack(padx=10, pady=10, fill='x')
 
-        ttk.Label(ut_frame, text="U:").grid(row=0, column=0, padx=5, pady=5, sticky='e')
+        ttk.Label(ut_frame, text="U, [кВ]:").grid(row=0, column=0, padx=5, pady=5, sticky='e')
         self.u_entry = ttk.Entry(ut_frame, width=10)
         self.u_entry.grid(row=0, column=1, padx=5, pady=5, sticky='w')
 
-        ttk.Label(ut_frame, text="T:").grid(row=0, column=2, padx=5, pady=5, sticky='e')
+        ttk.Label(ut_frame, text="T, [°С]:").grid(row=0, column=2, padx=5, pady=5, sticky='e')
         self.t_entry = ttk.Entry(ut_frame, width=10)
         self.t_entry.grid(row=0, column=3, padx=5, pady=5, sticky='w')
 
@@ -413,8 +432,7 @@ class MyApp:
         buttons_frame = ttk.Frame(input_frame)
         buttons_frame.pack(padx=10, pady=10, fill='x')
 
-        ttk.Button(buttons_frame, text="Заполнить примерными данными", command=self.fill_sample_data).pack(side='left',
-                                                                                                           padx=10)
+        ttk.Button(buttons_frame, text="Заполнить примерными данными", command=self.fill_sample_data).pack(side='left', padx=10)
         ttk.Button(buttons_frame, text="Рассчитать прогноз", command=self.make_prediction).pack(side='right', padx=10)
 
         # Фрейм для вывода результатов
@@ -427,23 +445,37 @@ class MyApp:
 
     def load_regression_data(self):
         """Загрузка данных для регрессии"""
-        file_path = filedialog.askopenfilename(title="Выберите файл данных для регрессии",
-                                               filetypes=[("Excel files", "*.xlsx;*.xls"), ("CSV files", "*.csv")])
+        file_path = filedialog.askopenfilename(
+            title="Выберите файл данных для регрессии",
+            filetypes=[
+                ("Excel files", "*.xlsx;*.xls"),
+                ("CSV files", "*.csv")
+            ])
         if file_path:
             try:
                 # Определение типа файла по расширению
                 if file_path.endswith('.csv'):
-                    self.reg_data = pd.read_csv(file_path, encoding='utf-8')
+                    self.reg_data = pd.read_csv(
+                        file_path,
+                        encoding='utf-8'
+                    )
                 else:
                     self.reg_data = pd.read_excel(file_path)
 
                 # Проверка наличие необходимых столбцов
-                required_columns_reg = ['х1', 'х2', 'х3', 'х4', 'х5', 'х6', 'х7', 'х8', 'х9', 'х10', 'Yн', 'Yс', 'Yв']
-                missing_columns = [col for col in required_columns_reg if col not in self.reg_data.columns]
+                required_columns_reg = ['х1', 'х2', 'х3', 'х4', 'х5',
+                                        'х6', 'х7', 'х8', 'х9', 'х10',
+                                        'Yн', 'Yс', 'Yв']
+                missing_columns = [col for col in required_columns_reg
+                                   if col not in self.reg_data.columns]
 
+                # окно предупреждения
                 if missing_columns:
-                    messagebox.showwarning("Предупреждение",
-                                           f"В файле отсутствуют следующие столбцы: {', '.join(missing_columns)}")
+                    messagebox.showwarning(
+                        "Предупреждение",
+                        f"В файле отсутствуют следующие столбцы:"
+                        f"{', '.join(missing_columns)}"
+                    )
 
                 # Обновление инфы на вкладке данных
                 info_text = f"Загружен файл: {file_path}\n"

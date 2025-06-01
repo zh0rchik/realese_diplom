@@ -1,0 +1,52 @@
+{
+    "zn": {
+        "y_column": "Yн",
+        "target_column": "Zн",
+        "random_state_split": 42,
+        "random_state_smote": 42,
+        "random_state_cv": 42,
+        "random_state_mlp": 42,
+        "use_smote": false,
+        "param_grid": {
+            "activation": ["relu"],
+            "alpha": [0.0005],
+            "hidden_layer_sizes": [[4, 10]],
+            "solver": ["lbfgs"],
+            "tol": [1e-7],
+            "max_iter": [200]
+        }
+    },
+    "zc": {
+        "y_column": "Yс",
+        "target_column": "Zс",
+        "random_state_split": 42,
+        "random_state_smote": 42,
+        "random_state_cv": 42,
+        "use_smote": false,
+        "param_grid": {
+            "activation": ["logistic"],
+            "alpha": [0.0001],
+            "hidden_layer_sizes": [[5, 7]],
+            "solver": ["lbfgs"],
+            "tol": [1e-4],
+            "max_iter": [250]
+        }
+    },
+    "zv": {
+        "y_column": "Yв",
+        "target_column": "Zв",
+        "random_state_split": 73,
+        "random_state_smote": 42,
+        "random_state_cv": 42,
+        "random_state_mlp": 42,
+        "use_smote": false,
+        "param_grid": {
+            "activation": ["relu"],
+            "alpha": [0.05],
+            "hidden_layer_sizes": [[12, 6]],
+            "solver": ["lbfgs"],
+            "tol": [1e-7],
+            "max_iter": [250]
+        }
+    }
+}
